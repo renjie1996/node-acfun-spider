@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "pm2": "NODE_ARGV_OPT=get_roll_article NODE_ARGV_3=5  pm2 start redis_spider.js",
-    "start": "NODE_ARGV_OPT=get_roll_article NODE_ARGV_3=5  node redis_spider.js",
-    "gen": "NODE_ARGV_OPT=generate_ids NODE_ARGV_3=0 NODE_ARGV_4=410 node redis_spider.js"
+    "pm2": "NODE_ARGV_OPT=get_roll_article NODE_ARGV_3=5  pm2 start index.js",
+    "start": "NODE_ARGV_OPT=get_roll_article NODE_ARGV_3=5  node index.js",
+    "gen": "NODE_ARGV_OPT=generate_ids NODE_ARGV_3=0 NODE_ARGV_4=410 node index.js"
   },
   "dependencies": {
+    "github-webhook-handler": "^0.7.1",
     "moment": "^2.20.1",
     "mongodb": "^3.0.1",
     "nodejieba": "^2.2.5",
