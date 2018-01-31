@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "cheerio": "^1.0.0-rc.2",
     "github-webhook-handler": "^0.7.1",
     "ioredis": "^3.2.2",
     "moment": "^2.20.1",
