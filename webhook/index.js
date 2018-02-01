@@ -21,9 +21,9 @@ handler.on('push', event => {
     console.log(txt);
     // 自动重启服务
     runCommand('sh', [`${__dirname}/restart.sh`], res => {
-      console.log('线上服务重启完成')
-    })
-  })
+      console.log('线上服务重启完成');
+    });
+  });
 });
 
 // issue钩子
@@ -32,6 +32,6 @@ handler.on('issues', event => {
     event.payload.repository.name,
     event.payload.action,
     event.payload.issue.number,
-    event.payload.issue.title)
+    event.payload.issue.title);
 });
 
