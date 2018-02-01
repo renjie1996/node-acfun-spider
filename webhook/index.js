@@ -1,3 +1,5 @@
+import { Promise } from '../../../../Library/Caches/typescript/2.6/node_modules/@types/bluebird';
+
 const { createServer } = require('http');
 const createHandler = require('github-webhook-handler');
 const { runCommand } = require('./command');
@@ -16,14 +18,13 @@ createServer((req, res) => handler(req, res, e => {
 handler.on('error', err => console.error('Error:', err.message));
 handler.on('push', event => {
   console.log(`Received a push event for ${event.payload.repository.name} to ${event.payload.ref}`);
-  runCommand('sh', [`${__dirname}/cicd.sh`], txt => {
-    console.log('-----------切出子进程进行自动pull-----------');
-    console.log(txt);
-    // 自动重启服务
-    runCommand('sh', [`${__dirname}/restart.sh`], res => {
-      console.log('线上服务重启完成');
-    });
-  });
+  runCommand('sh', [`${__dirname}/cicd.sh`])
+    .then(res => logMessage(res, '-----------切出子进程进行自动pull-----------'))
+    .then(res => runCommand('sh', [`${__dirname}/install.sh`]))
+    .then(res => logMessage(res, '-----------线上依赖安装完成-----------'))
+    .then(res => runCommand('sh', [`${__dirname}/restart.sh`]))
+    .then(res => logMessage(res, '-----------线上服务重启完成-----------'))
+  ;
 });
 
 // issue钩子
