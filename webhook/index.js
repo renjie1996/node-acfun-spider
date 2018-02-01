@@ -20,8 +20,9 @@ handler.on('push', event => {
     .then(res => logMessage(res, '-----------切出子进程进行自动pull-----------'))
     .then(res => runCommand('sh', [`${__dirname}/install.sh`]))
     .then(res => logMessage(res, '-----------线上依赖安装完成-----------'))
+    .then(res => logMessage(res, '-----------线上服务重启中----------'))
     .then(res => runCommand('sh', [`${__dirname}/restart.sh`]))
-    .then(res => logMessage(res, '-----------线上服务重启完成-----------'))
+    .catch(e => console.log(e))
   ;
 });
 
