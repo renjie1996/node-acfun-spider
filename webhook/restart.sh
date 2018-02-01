@@ -1,4 +1,4 @@
 #! /bin/bash
 cnpm i
-pm2 restart spider.js
+NODE_ARGV_OPT=get_roll_article NODE_ARGV_3=5  pm2 start index.js
 pm2 restart webhook/index.js
