@@ -1,8 +1,6 @@
-import { Promise } from '../../../../Library/Caches/typescript/2.6/node_modules/@types/bluebird';
-
 const { createServer } = require('http');
 const createHandler = require('github-webhook-handler');
-const { runCommand } = require('./command');
+const { runCommand, logMessage } = require('./command');
 const { HOOK_PORT } = require('./plugins');
 
 const handler = createHandler({ path: '/spider', secret: 'mytoken' });  // maybe there is no token;
