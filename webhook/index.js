@@ -3,7 +3,7 @@ const createHandler = require('github-webhook-handler');
 const { runCommand } = require('./command');
 const { HOOK_PORT } = require('./plugins');
 
-const handler = createHandler({ path: '/spider_webhook', secret: 'mytoken' });  // maybe there is no token;
+const handler = createHandler({ path: '/spider', secret: 'mytoken' });  // maybe there is no token;
 
 createServer((req, res) => handler(req, res, e => {
     res.statusCode = 404;
