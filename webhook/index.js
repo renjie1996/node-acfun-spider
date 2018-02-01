@@ -22,7 +22,7 @@ handler.on('push', event => {
     .then(res => logMessage(res, '-----------线上依赖安装完成-----------'))
     .then(res => logMessage(res, '-----------线上服务重启中----------'))
     .then(res => runCommand('sh', [`${__dirname}/restart.sh`]))
-    .catch(e => console.log(e))
+    .catch(e => console.log(e));
   ;
 });
 
