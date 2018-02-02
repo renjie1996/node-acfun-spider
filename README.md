@@ -26,9 +26,12 @@
 官网提供的webhook文档较简单，并未提供node最佳实践，开发中需要注意以下几点：
 
 🌟 1. 在repository中注册webhook是触发hook的前提
+
 🌟 2. 它仿佛像一个给写ajax发请求给我们服务的前端，第一约定接口：你可以在配置的url中跟它约定好后端路由，保证是唯一为它服务的接口，第二确定参数放在payload中还是放在body中解析
-🌟 3. 需要选中哪些事件。
-🌟 4. 请求的POST头中会带上* X-GitHub-Event * 、* X-GitHub-Delivery *、* X-Hub-Signature * （提取操作元字段和识别请求）
+
+🌟 3. 需要选中哪些事件
+
+🌟 4. 请求的POST头中会带上*X-GitHub-Event* 、*X-GitHub-Delivery*、*X-Hub-Signature* （提取操作元字段和识别请求）触发交付的事件类型的名称、确定的交付方式、hmac十六进制摘要是使用sha1哈希函数和secret作为hmac key生成的。
 
 最后watch到git发过来的请求：
 ```javascript
