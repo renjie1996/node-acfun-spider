@@ -5,6 +5,7 @@ const RedisServer = require('./redis_service');
 const MongoClient = require('mongodb').MongoClient;
 const Tag = require('./tag');
 const JieBa = require("nodejieba");
+const DOMAIN = `https://www.bilibili.com/read/cv`;
 
 async function spideringArticles(count) {
   const ids = await RedisServer.getRandomAcfunIds(count);
@@ -42,8 +43,8 @@ async function getArticlesBG(num) {
 }
 
 async function getContentById(id) {
-  const url = `http://www.acfun.cn/a/ac${id}`;
-  console.log(`TEST7#正在爬取: ${url}`);
+  const url = `${DOMAIN}${id}`;
+  console.log(`#正在爬取: ${url}`);
   const res = await axios.get(url).catch(e => {
     if(e.response && e.response.status === 404) {
       const err = new Error('Not Found');
@@ -58,7 +59,7 @@ async function getContentById(id) {
   const article = await formatFromCheerios($, id)
   if(!article) {    // 如果没找到articleContent，选择器对象一直存在，因此需要另外判断
     console.log(`ac${id}不存在`);
-    return
+    return;
   } 
   await RedisServer.markActicleIdSuccessed(id); // 有的话加入到已有的set中
   const article_saved = await saveToMongoDB(article, id)  // 将格式化好的内容放入mongodb
@@ -66,9 +67,9 @@ async function getContentById(id) {
 }
 
 async function formatFromCheerios ($, id) {
-  const articleContent = $(".article-content");
-  const title = $(".art-title .caption").text();
-  const originCreatedAt = moment($('.up-time').text(), 'YYYY年MM月DD日  hh:mm:ss').valueOf().toFixed(0);
+  const articleContent = $(".article-holder");
+  const title = $(".title-container .title").text();
+  const originCreatedAt = $(".create-time").attr("data-ts");
   const tags = await generatorTags($, id, title);
   if(!articleContent.html())  return;// if 404, do nothing  ; if not found or deleted, do nothing ; if is video, push its id to redis ;
   const content = flattenContent(articleContent, $);
@@ -86,25 +87,12 @@ async function formatFromCheerios ($, id) {
 
 async function generatorTags($, id, title) {
   const tags = [];
-  const articleTagName = $('.art-name').text();
-  const articleCategory = $('.art-census > a').text();
-  const mainTag = $('.art-tags > a').text();
-  const bdTag = $('.bd_tag > a').text();
+  const articleTagName = $('.category-link > span').text();
   const titleTag = JieBa.extract(title, 5);
-  const res = await axios.get(`http://www.acfun.cn/member/collect_up_exist.aspx?contentId=${id}`);  // 直接使用网站的api
-  if(!res || !titleTag) return;
-  const { tagList} = res.data.data;
   for(let tag of  titleTag) {
     tags.push(new Tag('Title_Extract', tag.word, tag.weight));
   }
-  for(let tag of tagList) {
-    tags.push(new Tag('Article_Api', tag.tagName, 1));
-  }
   articleTagName && tags.push(new Tag('TAGNAME', articleTagName, 1));
-  articleCategory && tags.push(new Tag('CATEGORY', articleCategory, 1));
-  mainTag && tags.push(new Tag('MAINTAG', mainTag, 1));
-  bdTag && tags.push(new Tag('BDTAG', bdTag, 1));
-
   return tags;
 }
 
@@ -117,9 +105,9 @@ function flattenContent(dom, $) {
 }
 
 function diffImgAndFont (c){
-  if(c.text()) return c.text()
-  else if(c[0] && c[0].name === "img") return c.attr("src")
-  return
+  if(c.text()) return c.text();
+  else if(c[0] && c[0].name === "img") return `http://${c.attr("data-src")}`;
+  return;
 }
 
 async function saveToMongoDB (article, id) {
