@@ -7,6 +7,10 @@ const Tag = require('./tag');
 const JieBa = require("nodejieba");
 const DOMAIN = `https://www.bilibili.com/read/cv`;
 
+const MONGO_URL = 'mongodb://localhost:27017';
+const connect = await MongoClient.connect(MONGO_URL);
+const db = await connect.db('acfun_v1');
+
 async function spideringArticles(count) {
   const ids = await RedisServer.getRandomAcfunIds(count);
   console.log(`随机取出的id为：${ids}`);
@@ -111,10 +115,6 @@ function diffImgAndFont (c){
 }
 
 async function saveToMongoDB (article, id) {
-  const MONGO_URL = 'mongodb://localhost:27017';
-  const connect = await MongoClient.connect(MONGO_URL);
-  const db = await connect.db('acfun_v1');
-
   return await db.collection('articles').findOneAndUpdate({
     acfunId: id
   }, article, {
