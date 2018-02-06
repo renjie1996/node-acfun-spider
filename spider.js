@@ -44,7 +44,7 @@ async function getArticlesBG(num) {
 
 async function getContentById(id) {
   const url = `${DOMAIN}${id}`;
-  console.log(`#正在爬取: ${url}`);
+  console.log(`Test#正在爬取: ${url}`);
   const res = await axios.get(url).catch(e => {
     if(e.response && e.response.status === 404) {
       const err = new Error('Not Found');
