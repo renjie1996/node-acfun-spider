@@ -6,10 +6,8 @@ const MongoClient = require('mongodb').MongoClient;
 const Tag = require('./tag');
 const JieBa = require("nodejieba");
 const DOMAIN = `https://www.bilibili.com/read/cv`;
-
 const MONGO_URL = 'mongodb://localhost:27017';
-const connect = await MongoClient.connect(MONGO_URL);
-const db = await connect.db('acfun_v1');
+let isConnected = false;
 
 async function spideringArticles(count) {
   const ids = await RedisServer.getRandomAcfunIds(count);
@@ -115,6 +113,11 @@ function diffImgAndFont (c){
 }
 
 async function saveToMongoDB (article, id) {
+  if(!isConnected) {
+    const connect = await MongoClient.connect(MONGO_URL);
+    const db = await connect.db('acfun_v1');
+    isConnected = true;
+  }
   return await db.collection('articles').findOneAndUpdate({
     acfunId: id
   }, article, {
